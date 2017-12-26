@@ -1,7 +1,6 @@
 Based on Itext.
 
-
-#HOW TO USE IT
+# HOW TO USE IT
 
 Firstly, retrieve the token stream.
 
@@ -9,7 +8,7 @@ Firstly, retrieve the token stream.
 
 ```java
 PdfReader pdfReader = new PdfReader(filePath);
-byte[] pageBytes = pdfReader.getPageContent(pageNum);000
+byte[] pageBytes = pdfReader.getPageContent(pageNum);
 ```
 
 Then:
