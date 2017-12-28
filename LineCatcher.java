@@ -24,6 +24,7 @@ public abstract class LineCatcher{
         //moveto move the current point
 
         boolean inGraphicState = false;
+        int bufferSize = 0;
 
         while(tokeniser.nextToken()) {
             tokenType = tokeniser.getTokenType();
@@ -33,40 +34,45 @@ public abstract class LineCatcher{
             if (tokenType == PRTokeniser.TokenType.NUMBER && inGraphicState) {
                 buffer.add(Float.parseFloat(tokenValue));
             } else if (tokenType == PRTokeniser.TokenType.OTHER) {
-                if(tokenValue.equals("q")){
-                    inGraphicState = true;
-                    matrixStack.push(new Matrix());
-                }else if(tokenValue.equals("cm")){
-                    int bufferSize = buffer.size();
-                    Matrix matrix = new Matrix(buffer.get(bufferSize - 6),buffer.get(bufferSize - 5),
-                            buffer.get(bufferSize - 4), buffer.get(bufferSize - 3),
-                            buffer.get(bufferSize - 2),buffer.get(bufferSize - 1));
-                    matrixStack.push(matrix.multiply(matrixStack.pop()));
-                }else if(tokenValue.equals("Q")){
-                    inGraphicState = false;
-                    matrixStack.pop();
-                }else if(tokenValue.equals("m")){
-                    int bufferSize = buffer.size();
-                    if(!matrixStack.empty()){
-                        float sx = matrixStack.peek().get(Matrix.I31);
-                        float sy = matrixStack.peek().get(Matrix.I32);
-                        sx += buffer.get(bufferSize - 2);
-                        sy += buffer.get(bufferSize - 1);
-                        lineList.add(new LinePath(sx,sy,0,0));
-                    }
-                }else if(tokenValue.equals("l")){
-                    int bufferSize = buffer.size();
-                    float w = buffer.get(bufferSize - 2);
-                    float h = buffer.get(bufferSize - 1);
-                    if(!lineList.isEmpty()){
-                        LinePath lastLine = lineList.get(lineList.size() - 1);
-                        lastLine.setW(w);
-                        lastLine.setH(h);
-                    }
+                switch(tokenValue){
+                    case "q":
+                        inGraphicState = true;
+                        matrixStack.push(new Matrix());
+                        break;
+                    case "cm":
+                        bufferSize = buffer.size();
+                        Matrix matrix = new Matrix(buffer.get(bufferSize - 6),buffer.get(bufferSize - 5),
+                                buffer.get(bufferSize - 4), buffer.get(bufferSize - 3),
+                                buffer.get(bufferSize - 2),buffer.get(bufferSize - 1));
+                        matrixStack.push(matrix.multiply(matrixStack.pop()));
+                        break;
+                    case "Q":
+                        inGraphicState = false;
+                        matrixStack.pop();
+                        break;
+                    case "m":
+                        bufferSize = buffer.size();
+                        if(!matrixStack.empty()){
+                            float sx = matrixStack.peek().get(Matrix.I31);
+                            float sy = matrixStack.peek().get(Matrix.I32);
+                            sx += buffer.get(bufferSize - 2);
+                            sy += buffer.get(bufferSize - 1);
+                            lineList.add(new LinePath(sx,sy,0,0));
+                        }
+                        break;
+                    case "l":
+                        bufferSize = buffer.size();
+                        float w = buffer.get(bufferSize - 2);
+                        float h = buffer.get(bufferSize - 1);
+                        if(!lineList.isEmpty()){
+                            LinePath lastLine = lineList.get(lineList.size() - 1);
+                            lastLine.setW(w);
+                            lastLine.setH(h);
+                        }
+                        break;
                 }
             }
         }
         return lineList;
     }
-
 }
