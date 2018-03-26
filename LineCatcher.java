@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public abstract class LineCatcher{
+public final class LineCatcher{
     public static List<LinePath> processToken(byte[] pageBytes) throws IOException{
         List<Float> buffer = new ArrayList<>();
         Stack<Matrix> matrixStack = new Stack<>();
